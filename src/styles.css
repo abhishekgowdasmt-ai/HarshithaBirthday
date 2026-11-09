@@ -322,3 +322,33 @@ button:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 4p
   .bts-wish-parade__message { font-size:9px; }
   .jungkook-sticker-wrap { right:-1px; bottom:88px; width:76px; }
 }
+
+/* Arrival: one large November 10 star. One tap opens the next scene. */
+.november-arrival { position:relative; z-index:1; min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:8px; padding:8px 8px 18px; }
+.november-arrival .eyebrow { justify-content:center; }
+.november-arrival h1 { font-size:clamp(40px, 6vw, 64px); }
+.november-arrival__lede { max-width:34ch; margin:4px 0 8px; color:#ead6cf; font:400 18px/1.35 var(--serif); }
+.november-star { position:relative; display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:8px; padding:18px; border:0; background:transparent; cursor:pointer; color:#ffe7ad; }
+.november-star__halo { position:absolute; top:18px; left:50%; width:248px; height:248px; margin-left:-124px; border-radius:50%; border:2px solid rgba(255,220,150,.8); box-shadow:0 0 24px rgba(255,206,120,.35); animation:starHalo 1.8s ease-out infinite; pointer-events:none; }
+.november-star__halo--outer { width:292px; height:292px; margin-left:-146px; top:-4px; animation-delay:.45s; opacity:.7; }
+.november-star__core { position:relative; z-index:1; width:230px; height:230px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border-radius:50%; border:1px solid rgba(255,228,176,.9); background:radial-gradient(circle at 40% 32%,rgba(255,244,214,.34),rgba(92,52,68,.78) 42%,rgba(28,16,32,.95)); box-shadow:0 0 0 12px rgba(255,214,140,.12),0 0 48px rgba(255,206,120,.5),inset 0 0 24px rgba(255,220,150,.16); }
+.november-star__core strong { color:#fff6df; font:600 22px/1 var(--serif); letter-spacing:.02em; }
+.november-star__core small { color:#f3ddb8; font:500 13px/1 var(--serif); letter-spacing:.08em; }
+.november-star__hint { position:relative; z-index:1; min-width:92px; padding:8px 16px; border:1px solid rgba(255,226,166,.8); border-radius:999px; color:#2a1824; background:linear-gradient(180deg,#fff1c8,#e4b86a); font-size:14px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; box-shadow:0 8px 18px rgba(0,0,0,.28); }
+.november-star.is-lit .november-star__halo { animation:none; opacity:0; }
+.november-star.is-lit .november-star__core { color:#fff8dc; border-color:#fff1c2; background:radial-gradient(circle at 40% 32%,#fff6d4,#f0c56a 46%,#c98445); box-shadow:0 0 48px rgba(255,214,130,.9); }
+.november-star.is-lit .november-star__hint { color:#fff6df; background:rgba(62,34,48,.9); border-color:rgba(255,226,166,.55); }
+.november-star__burst { position:absolute; top:116px; left:50%; width:0; height:0; pointer-events:none; }
+.november-star__burst i { position:absolute; color:#fff1c4; font-style:normal; font-size:22px; text-shadow:0 0 12px rgba(255,214,130,.95); }
+@media (max-width:640px) {
+  .november-arrival h1 { font-size:40px; line-height:.95; }
+  .november-arrival__lede { font-size:16px; margin-bottom:2px; }
+  .november-star__core { width:210px; height:210px; }
+  .november-star__core svg { width:78px; height:78px; }
+  .november-star__halo { width:226px; height:226px; margin-left:-113px; }
+  .november-star__halo--outer { width:264px; height:264px; margin-left:-132px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .november-star__halo { animation:none; }
+}
+@keyframes starHalo { 0% { transform:scale(.82); opacity:.85; } 100% { transform:scale(1.45); opacity:0; } }

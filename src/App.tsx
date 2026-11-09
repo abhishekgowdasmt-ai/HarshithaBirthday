@@ -11,7 +11,7 @@ import { SceneNavigation } from './components/SceneNavigation'
 import { MusicController } from './components/MusicController'
 
 const scenes = [
-  { id: 'arrival', label: 'The arrival', short: 'ARRIVAL', description: birthdayConfig.sceneDescriptions.arrival, className: 'scene--arrival', durationMs: 9500 },
+  { id: 'arrival', label: 'The arrival', short: 'ARRIVAL', description: birthdayConfig.sceneDescriptions.arrival, className: 'scene--arrival', durationMs: 0 },
   { id: 'wishes', label: 'Wishes & blessings', short: 'THE WISHES', description: birthdayConfig.sceneDescriptions.wishes, className: 'scene--wishes', durationMs: 0 },
   { id: 'celebration', label: 'The celebration', short: 'THE FINALE', description: birthdayConfig.sceneDescriptions.celebration, className: 'scene--celebration', durationMs: 0 },
   { id: 'letter', label: 'A personal note', short: 'A LETTER', description: birthdayConfig.sceneDescriptions.letter, className: 'scene--letter', durationMs: 0 },
@@ -26,7 +26,7 @@ function App() {
   const reducedMotion = useReducedMotion()
   const activeScene = scenes[current]
   // The wishes scene is intentionally gated by the film's real ended event.
-  const autoAdvanceMs = current === 0 ? activeScene.durationMs : undefined
+  const autoAdvanceMs = activeScene.durationMs > 0 ? activeScene.durationMs : undefined
   const transition = useMemo(() => reducedMotion ? { duration: 0.01 } : { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const }, [reducedMotion])
 
   const startMusic = () => {
@@ -94,7 +94,7 @@ function App() {
   }
 
   const sceneContent = activeScene.id === 'arrival'
-    ? <PrincessEntrance princessName={birthdayConfig.princessName} princessNickname={birthdayConfig.princessNickname} date={birthdayConfig.birthdayDate} />
+    ? <PrincessEntrance princessName={birthdayConfig.princessName} princessNickname={birthdayConfig.princessNickname} date={birthdayConfig.birthdayDate} onComplete={() => { setVideoPlaying(false); setCurrent(1) }} />
     : activeScene.id === 'wishes'
       ? <RoyalWishesScene onVideoPlayingChange={setVideoPlaying} onVideoEnded={videoEnded} />
       : activeScene.id === 'celebration'
@@ -122,7 +122,7 @@ function App() {
           </div>
           <footer className="story-footer">
             <div className="footer-whisper"><span>✧</span> MADE WITH LOVE, JUST FOR YOU <span>✧</span></div>
-          <SceneNavigation current={current + 1} count={scenes.length} onBack={back} onReplay={replay} autoAdvanceMs={current < scenes.length - 1 ? autoAdvanceMs : undefined} awaitingVideo={current === 1} continueLabel={current === 2 ? 'WISH RITUAL' : undefined} />
+          <SceneNavigation current={current + 1} count={scenes.length} onBack={back} onReplay={replay} autoAdvanceMs={current < scenes.length - 1 ? autoAdvanceMs : undefined} awaitingVideo={current === 1} continueLabel={current === 0 ? 'TAP THE STAR' : current === 2 ? 'WISH RITUAL' : undefined} />
           </footer>
         </motion.main>
       )}

@@ -1,60 +1,70 @@
-import { useState, type CSSProperties } from 'react'
-import { motion } from 'framer-motion'
-import { Crown, Heart, Sparkles, Star } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Star } from 'lucide-react'
 
-type Props = { princessName: string; princessNickname: string; date: string }
+type Props = { princessName: string; princessNickname: string; date: string; onComplete: () => void }
 
-const starPositions: CSSProperties[] = [
-  { top: '14%', left: '11%' },
-  { top: '19%', right: '9%' },
-  { bottom: '19%', left: '14%' },
-]
+const sparkles = ['✦', '✧', '✦', '♥', '✧', '✦', '✧', '✦']
 
-export function PrincessEntrance({ princessName, princessNickname, date }: Props) {
-  const [litStars, setLitStars] = useState<number[]>([])
+export function PrincessEntrance({ princessName, princessNickname, date, onComplete }: Props) {
+  const [lit, setLit] = useState(false)
+  const reducedMotion = useReducedMotion()
+  const onCompleteRef = useRef(onComplete)
+  onCompleteRef.current = onComplete
 
-  const lightStar = (index: number) => {
-    setLitStars((current) => current.includes(index) ? current : [...current, index])
+  const lightStar = () => {
+    setLit((current) => current || true)
   }
 
+  useEffect(() => {
+    if (!lit) return
+    const timer = window.setTimeout(() => onCompleteRef.current(), 700)
+    return () => window.clearTimeout(timer)
+  }, [lit])
+
   return (
-    <div className="scene-layout arrival-layout">
-      <div className="scene-copy">
-        <p className="eyebrow eyebrow--light"><span /> THE PRINCESS ARRIVES <span /></p>
-        <h1>Welcome,<br /><em>Your Royal Highness</em></h1>
-        <p className="scene-lede">Every rose, every candle, every golden light has been waiting for this moment.</p>
-        <div className="name-plaque"><Crown size={19} /><div><span>OUR PRINCESS</span><strong>{princessName}</strong><small>{princessNickname} · {date}</small></div><Heart size={17} /></div>
-        <div className="scene-note star-instructions"><Sparkles size={14} /> {litStars.length === 3 ? 'The palace stars are shining just for you.' : `Tap the floating stars to light the palace · ${litStars.length}/3`}</div>
-      </div>
-      <div className="portrait-stage">
-        <motion.div className="portrait-orbit" animate={{ rotate: 360 }} transition={{ duration: 44, repeat: Infinity, ease: 'linear' }} />
-        <div className="portrait-frame">
-          <div className="portrait-placeholder" aria-label={`Decorative royal cameo for ${princessNickname}`}><div className="cameo-orbit"/><div className="cameo-silhouette" aria-hidden="true"><Crown size={24} strokeWidth={1.2} /><i className="cameo-head"/><span /></div><span className="cameo-name">{princessNickname}</span><small>A little royal cameo, just for you</small></div>
-        </div>
-        <div className="star-interactions" aria-label="Interactive palace stars">
-          {starPositions.map((position, index) => {
-            const lit = litStars.includes(index)
-            return (
-              <motion.button
+    <div className="november-arrival">
+      <p className="eyebrow eyebrow--light"><span /> ONE STAR, JUST FOR YOU <span /></p>
+      <h1>Tap the star<br /><em>of November 10</em></h1>
+      <p className="november-arrival__lede">A single touch opens the rest of your birthday, {princessNickname}.</p>
+      <motion.button
+        className={`november-star ${lit ? 'is-lit' : ''}`}
+        type="button"
+        aria-label={lit ? `The star of ${date} is lit` : `Tap the star of ${date}`}
+        aria-pressed={lit}
+        onClick={lightStar}
+        animate={reducedMotion || lit ? undefined : { scale: [1, 1.04, 1] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        whileTap={reducedMotion ? undefined : { scale: 0.94 }}
+      >
+        <span className="november-star__halo" aria-hidden="true" />
+        <span className="november-star__halo november-star__halo--outer" aria-hidden="true" />
+        <span className="november-star__core">
+          <Star size={92} strokeWidth={1.15} fill={lit ? 'currentColor' : 'none'} />
+          <strong>{date.replace(/th$/, '')}</strong>
+          <small>{princessName}</small>
+        </span>
+        <span className="november-star__hint">{lit ? 'Opening your story' : 'Tap'}</span>
+        {lit && (
+          <span className="november-star__burst" aria-hidden="true">
+            {sparkles.map((sparkle, index) => (
+              <motion.i
                 key={index}
-                className={`constellation-star ${lit ? 'is-lit' : ''}`}
-                type="button"
-                style={position}
-                aria-label={`Light palace star ${index + 1}`}
-                aria-pressed={lit}
-                onClick={() => lightStar(index)}
-                animate={{ y: [0, -6, 0], rotate: [0, 7, -5, 0] }}
-                transition={{ duration: 2.4 + index * 0.35, repeat: Infinity, ease: 'easeInOut' }}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.82 }}
+                initial={{ opacity: 0, x: 0, y: 0, scale: 0.3 }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  x: Math.cos((index / sparkles.length) * Math.PI * 2) * 120,
+                  y: Math.sin((index / sparkles.length) * Math.PI * 2) * 120,
+                  scale: 1,
+                }}
+                transition={{ duration: reducedMotion ? 0.2 : 0.7, ease: 'easeOut' }}
               >
-                <Star size={20} fill={lit ? 'currentColor' : 'none'} />
-              </motion.button>
-            )
-          })}
-        </div>
-        <div className="rose rose-a">✿</div><div className="rose rose-b">✿</div><div className="rose rose-c">✿</div>
-      </div>
+                {sparkle}
+              </motion.i>
+            ))}
+          </span>
+        )}
+      </motion.button>
     </div>
   )
 }
